@@ -1,66 +1,65 @@
-import java.lang.Math;
+import java.util.Random;
 
-// Interface for a generic shape
-interface Shape {
-    double calculateArea();
-    double calculatePerimeter();
-}
+// Пример класса персонажа
+class Character {
+    private String name;
+    private int hitPoints;
+    private int attackBonus;
+    private int defense;
 
-// Base class for all shapes
-abstract class AbstractShape implements Shape {
-    // No need to implement Shape interface methods here
-}
-
-// Concrete class for Circle
-class Circle extends AbstractShape {
-    private double radius;
-
-    public Circle(double radius) {
-        this.radius = radius;
+    public Character(String name, int hitPoints, int attackBonus, int defense) {
+        this.name = name;
+        this.hitPoints = hitPoints;
+        this.attackBonus = attackBonus;
+        this.defense = defense;
     }
 
-    @Override
-    public double calculateArea() {
-        return Math.PI * radius * radius;
+    // Геттер и сеттер для hitPoints
+    public int getHitPoints() {
+        return hitPoints;
     }
 
-    @Override
-    public double calculatePerimeter() {
-        return 2 * Math.PI * radius;
-    }
-}
-
-// Concrete class for Rectangle
-class Rectangle extends AbstractShape {
-    private double length;
-    private double width;
-
-    public Rectangle(double length, double width) {
-        this.length = length;
-        this.width = width;
+    public void setHitPoints(int hitPoints) {
+        this.hitPoints = hitPoints;
     }
 
-    @Override
-    public double calculateArea() {
-        return length * width;
+    // Метод для атаки другого персонажа
+    public void attack(Character target) {
+        Random random = new Random();
+        int roll = random.nextInt(20) + 1; // Бросок кубика d20
+        int attackRoll = roll + attackBonus;
+
+        if (attackRoll > target.defense) {
+            int damage = random.nextInt(6) + 1; // Бросок кубика d6 для урона
+            target.takeDamage(damage);
+            System.out.println(name + " hits " + target.name + " for " + damage + " damage!");
+        } else {
+            System.out.println(name + " misses " + target.name + "!");
+        }
     }
 
-    @Override
-    public double calculatePerimeter() {
-        return 2 * (length + width);
+    // Метод для получения урона
+    public void takeDamage(int damage) {
+        hitPoints -= damage;
+        if (hitPoints <= 0) {
+            System.out.println(name + " has been defeated!");
+        }
     }
 }
 
-// Client code
-public class Main {
+// Пример класса приложения для тестирования системы D&D
+public class DnDSystem {
     public static void main(String[] args) {
-        // Creating objects of shapes
-        Circle circle = new Circle(5);
-        Rectangle rectangle = new Rectangle(4, 6);
+        // Создание персонажей
+        Character player = new Character("Player", 20, 5, 10);
+        Character enemy = new Character("Enemy", 15, 3, 8);
 
-        // Calculating and displaying area and perimeter
-        System.out.println("Circle - Area: " + circle.calculateArea() + ", Perimeter: " + circle.calculatePerimeter());
-        System.out.println("Rectangle - Area: " + rectangle.calculateArea() + ", Perimeter: " + rectangle.calculatePerimeter());
+        // Бой между персонажами
+        while (player.getHitPoints() > 0 && enemy.getHitPoints() > 0) {
+            player.attack(enemy);
+            if (enemy.getHitPoints() > 0) {
+                enemy.attack(player);
+            }
+        }
     }
 }
-
